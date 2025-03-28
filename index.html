@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather ForeCasts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #8B5CF6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            background: #1E1B4B;
+            padding: 30px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .welcome-screen h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-screen h1 span {
+            color: #F59E0B;
+            display: block;
+            font-size: 56px;
+        }
+
+        .get-started {
+            background: #F59E0B;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 18px;
+            margin-top: 40px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .get-started:hover {
+            transform: scale(1.05);
+        }
+
+        .main-weather {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .temperature {
+            font-size: 72px;
+            margin: 20px 0;
+        }
+
+        .location {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .forecast-cards {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 20px 0;
+            margin: 30px 0;
+        }
+
+        .forecast-card {
+            background: rgba(139, 92, 246, 0.3);
+            padding: 20px;
+            border-radius: 20px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .forecast-card .day {
+            margin-bottom: 10px;
+        }
+
+        .forecast-card .temp {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: rgba(139, 92, 246, 0.3);
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .info-card h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .info-card .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .info-card .subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .air-quality {
+            background: rgba(139, 92, 246, 0.3);
+            padding: 20px;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+
+        .air-quality h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .air-quality .value {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .see-more {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .weather-icon {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .nav-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .nav-button:hover {
+            opacity: 1;
+        }
+
+        /* Hide scrollbar but keep functionality */
+        .forecast-cards::-webkit-scrollbar {
+            display: none;
+        }
+
+        .forecast-cards {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .status-bar .time {
+            font-weight: bold;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-bar">
+            <div class="time">1:41</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+
+        <div id="welcomeScreen" class="welcome-screen">
+            <div class="weather-icon">
+                <img src="https://openweathermap.org/img/wn/10d@4x.png" alt="Weather" width="150">
+            </div>
+            <h1>Weather<br><span>Forecasts</span></h1>
+            <button class="get-started" onclick="showMainScreen()">Get Started</button>
+        </div>
+
+        <div id="mainScreen" style="display: none;">
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="cityInput" placeholder="Search city..." 
+                    style="width: 100%; padding: 10px; border-radius: 20px; border: none; background: rgba(255,255,255,0.2); color: white;">
+            </div>
+
+            <div class="location" id="location">North America</div>
+            <div class="main-weather">
+                <div class="weather-icon">
+                    <img id="mainWeatherIcon" src="https://openweathermap.org/img/wn/10d@4x.png" alt="Weather" width="150">
+                </div>
+                <div class="temperature" id="mainTemp">--°</div>
+                <div class="description" id="weatherDesc">--</div>
+                <div id="tempRange">Max: --° Min: --°</div>
+            </div>
+
+            <div class="forecast-cards" id="forecastCards">
+                <!-- Forecast cards will be added dynamically -->
+            </div>
+
+            <div class="air-quality">
+                <h3><i class="fas fa-wind"></i> AIR QUALITY</h3>
+                <div class="value" id="airQuality">--</div>
+                <div class="see-more">
+                    <span>See more</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="info-cards">
+                <div class="info-card">
+                    <h3>SUNRISE</h3>
+                    <div class="value" id="sunrise">--</div>
+                    <div class="subtitle" id="sunset">Sunset: --</div>
+                </div>
+                <div class="info-card">
+                    <h3>UV INDEX</h3>
+                    <div class="value" id="uvIndex">--</div>
+                    <div class="subtitle">Moderate</div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="getCurrentLocation()"><i class="fas fa-map-marker-alt"></i></button>
+                <button class="nav-button"><i class="fas fa-plus"></i></button>
+                <button class="nav-button"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = 'e5b7f016ca11fc868af52ced7aa75925';
+
+        function showMainScreen() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('mainScreen').style.display = 'block';
+            // Get weather for default city
+            getWeather('London');
+        }
+
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            document.querySelector('.status-bar .time').textContent = 
+                `${hours}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        async function getWeather(city) {
+            try {
+                // Get current weather
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
+                if (!response.ok) throw new Error('City not found');
+                const data = await response.json();
+
+                // Update UI with weather data
+                document.getElementById('location').textContent = data.name;
+                document.getElementById('mainTemp').textContent = `${Math.round(data.main.temp)}°`;
+                document.getElementById('weatherDesc').textContent = data.weather[0].description;
+                document.getElementById('tempRange').textContent = `Max: ${Math.round(data.main.temp_max)}° Min: ${Math.round(data.main.temp_min)}°`;
+                document.getElementById('mainWeatherIcon').src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@4x.png`;
+                
+                // Update sunrise/sunset
+                document.getElementById('sunrise').textContent = formatTime(data.sys.sunrise);
+                document.getElementById('sunset').textContent = `Sunset: ${formatTime(data.sys.sunset)}`;
+                
+                // Mock UV Index and Air Quality (as they require different API endpoints)
+                document.getElementById('uvIndex').textContent = '4';
+                document.getElementById('airQuality').textContent = '3-Low Health Risk';
+
+                // Get 5-day forecast
+                const forecastResponse = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
+                const forecastData = await forecastResponse.json();
+                
+                // Update forecast cards
+                const forecastCards = document.getElementById('forecastCards');
+                forecastCards.innerHTML = '';
+                
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const processedDays = new Set();
+                
+                forecastData.list.forEach(forecast => {
+                    const date = new Date(forecast.dt * 1000);
+                    const day = days[date.getDay()];
+                    
+                    if (!processedDays.has(day) && processedDays.size < 4) {
+                        processedDays.add(day);
+                        forecastCards.innerHTML += `
+                            <div class="forecast-card">
+                                <div class="day">${day}</div>
+                                <img src="https://openweathermap.org/img/wn/${forecast.weather[0].icon}@2x.png" alt="Weather" width="50">
+                                <div class="temp">${Math.round(forecast.main.temp)}°</div>
+                            </div>
+                        `;
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error fetching weather:', error);
+                alert('City not found. Please try again.');
+            }
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async position => {
+                    const { latitude, longitude } = position.coords;
+                    const response = await fetch(
+                        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`
+                    );
+                    const data = await response.json();
+                    getWeather(data.name);
+                }, error => {
+                    console.error('Error getting location:', error);
+                    getWeather('London'); // Default fallback
+                });
+            }
+        }
+
+        // Event listeners
+        document.getElementById('cityInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const city = this.value.trim();
+                if (city) getWeather(city);
+            }
+        });
+
+        // Initialize
+        updateTime();
+        setInterval(updateTime, 60000);
+        document.getElementById('mainScreen').style.display = 'none';
+    </script>
+</body>
+</html>
